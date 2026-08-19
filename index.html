@@ -799,25 +799,41 @@
   }
 
   /* ---------- contact form ---------- */
-  var orderForm = document.getElementById('orderForm');
+  var contactForm = document.getElementById('contactForm');
   var contactSuccess = document.getElementById('contactSuccess');
-  orderForm.addEventListener('submit', function(e){
-  e.preventDefault();
-  if(!orderForm.checkValidity()){
-    orderForm.reportValidity();
-    return;
-  }
-  fetch(orderForm.action, {
-    method: 'POST',
-    body: new FormData(orderForm),
-    headers: { 'Accept': 'application/json' }
-  }).then(function(res){
-    if(res.ok){
-      orderSuccess.classList.add('show');
-      orderForm.style.display = 'none';
+
+  contactForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    if(!contactForm.checkValidity()){
+      contactForm.reportValidity();
+      return;
     }
+    var submitBtn = contactForm.querySelector('.submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending...';
+
+    fetch(contactForm.action, {
+      method: 'POST',
+      body: new FormData(contactForm),
+      headers: { 'Accept': 'application/json' }
+    })
+    .then(function(res){
+      if(res.ok){
+        contactSuccess.classList.add('show');
+        contactForm.style.display = 'none';
+      } else {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send message';
+        alert('Something went wrong sending your message. Please try again or call us directly.');
+      }
+    })
+    .catch(function(){
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Send message';
+      alert('Could not send right now. Please check your connection or call us directly.');
+    });
   });
-});
+
   /* ---------- order modal ---------- */
   var orderOverlay = document.getElementById('orderOverlay');
   var orderProductName = document.getElementById('orderProductName');
@@ -850,8 +866,34 @@
       orderForm.reportValidity();
       return;
     }
-    orderSuccess.classList.add('show');
-    orderForm.style.display = 'none';
+    var submitBtn = orderForm.querySelector('.submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending...';
+
+    // include which product was selected, since the visible heading text isn't a form field
+    var formData = new FormData(orderForm);
+    formData.append('product', orderProductName.textContent);
+
+    fetch(orderForm.action, {
+      method: 'POST',
+      body: formData,
+      headers: { 'Accept': 'application/json' }
+    })
+    .then(function(res){
+      if(res.ok){
+        orderSuccess.classList.add('show');
+        orderForm.style.display = 'none';
+      } else {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Place order request';
+        alert('Something went wrong sending your order request. Please try again or call us directly.');
+      }
+    })
+    .catch(function(){
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Place order request';
+      alert('Could not send right now. Please check your connection or call us directly.');
+    });
   });
 
   /* ---------- footer year ---------- */
@@ -912,7 +954,6 @@
       function tick(){
         ctx.clearRect(0,0,w,h);
 
-        // subtle vertical gradient backdrop
         var grad = ctx.createLinearGradient(0,0,w,0);
         grad.addColorStop(0, 'rgba(255,255,255,0.03)');
         grad.addColorStop(1, 'rgba(242,234,216,0.06)');
@@ -927,7 +968,6 @@
 
           if(b.y < 0 || b.y > h) b.vy *= -1;
 
-          // bounce off mesh boundary, stay left of it
           if(b.x > meshX - b.r){
             b.x = meshX - b.r;
             b.vx *= -1;
