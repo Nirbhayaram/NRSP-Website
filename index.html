@@ -886,7 +886,7 @@
     var formData = new FormData(orderForm);
     formData.append('product', orderProductName.textContent);
 
-    fetch(orderForm.action, {
+    fetch('https://formspree.io/f/mrpzrpby', {
       method: 'POST',
       body: formData,
       headers: { 'Accept': 'application/json' }
