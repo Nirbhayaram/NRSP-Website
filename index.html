@@ -627,7 +627,7 @@
         <div class="contact-grid">
           <div class="contact-card" data-animate>
             <div class="success-banner" id="contactSuccess">Thanks — your message has been noted. We'll get back to you shortly to confirm details.</div>
-            <form id="contactForm" novalidate action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+            <form id="contactForm" action="https://formspree.io/f/mrpzrpby" method="POST">
               <div class="form-row-double">
                 <div class="form-row">
                   <label for="cf-name">Full name</label>
@@ -740,21 +740,21 @@
     <form id="orderForm" action="https://formspree.io/f/mrpzrpby" method="POST">
       <div class="form-row">
         <label for="of-name">Full name</label>
-        <input type="text" id="of-name" required>
+        <input type="text" id="of-name" name="name" required>
       </div>
       <div class="form-row-double">
         <div class="form-row">
           <label for="of-phone">Phone number</label>
-          <input type="tel" id="of-phone" required>
+          <input type="tel" id="of-phone" name="phone" required>
         </div>
         <div class="form-row">
           <label for="of-qty">Quantity</label>
-          <input type="number" id="of-qty" min="1" value="1" required>
+          <input type="number" id="of-qty" name="quantity" min="1" value="1" required>
         </div>
       </div>
       <div class="form-row">
         <label for="of-address">Delivery / installation address</label>
-        <textarea id="of-address" rows="3" required></textarea>
+        <textarea id="of-address" name="address" rows="3" required></textarea>
       </div>
       <button type="submit" class="submit-btn">Place order request</button>
       <p class="form-note">This is a front-end demo — connect it to a payments/booking backend to accept real orders.</p>
@@ -893,19 +893,20 @@
     })
     .then(function(res){
       if(res.ok){
-        orderSuccess.classList.add('show');
-        orderForm.style.display = 'none';
-      } else {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Place order request';
-        alert('Something went wrong sending your order request. Please try again or call us directly.');
-      }
-    })
-    .catch(function(){
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Place order request';
-      alert('Could not send right now. Please check your connection or call us directly.');
+    contactSuccess.classList.add('show');
+    contactForm.style.display = 'none';
+    } else {
+    res.json().then(function(data) {
+      console.log("Formspree error:", data);
+      alert("Formspree Error: " + JSON.stringify(data));
+    }).catch(function() {
+      alert("Formspree returned an error. Check the browser console.");
     });
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Send message';
+  }
+    })
   });
 
   /* ---------- footer year ---------- */
